@@ -20,7 +20,7 @@ class ViewController: UIViewController {
 	}
 
 	override func touchesBegan(touches: Set<UITouch>, withEvent event: UIEvent?) {
-		guard let alice = middleAlice where alice.hidden == false else {
+		guard let alice = middleAlice where alice.alpha == 1.0 else {
 			explodeKit.explode(elementsViews.subviews)
 			return
 		}

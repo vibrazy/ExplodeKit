@@ -14,7 +14,6 @@
 		58E75D521D509DE400A38567 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 58E75D511D509DE400A38567 /* Assets.xcassets */; };
 		58E75D551D509DE400A38567 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 58E75D531D509DE400A38567 /* LaunchScreen.storyboard */; };
 		58E75D601D509DE400A38567 /* ExplodeKitTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58E75D5F1D509DE400A38567 /* ExplodeKitTests.swift */; };
-		58E75D721D50A08D00A38567 /* UIView+Autolayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58E75D711D50A08D00A38567 /* UIView+Autolayout.swift */; };
 		58E75D741D50C6BB00A38567 /* 1cecc7a77928ca8133fa24680a88d2f9.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 58E75D731D50C6BB00A38567 /* 1cecc7a77928ca8133fa24680a88d2f9.jpg */; };
 /* End PBXBuildFile section */
 
@@ -40,7 +39,6 @@
 		58E75D5B1D509DE400A38567 /* ExplodeKitTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ExplodeKitTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		58E75D5F1D509DE400A38567 /* ExplodeKitTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExplodeKitTests.swift; sourceTree = "<group>"; };
 		58E75D611D509DE400A38567 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		58E75D711D50A08D00A38567 /* UIView+Autolayout.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "UIView+Autolayout.swift"; path = "ExplodeKit/UIView+Autolayout.swift"; sourceTree = "<group>"; };
 		58E75D731D50C6BB00A38567 /* 1cecc7a77928ca8133fa24680a88d2f9.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = 1cecc7a77928ca8133fa24680a88d2f9.jpg; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -83,7 +81,6 @@
 		58E75D491D509DE400A38567 /* ExplodeKit */ = {
 			isa = PBXGroup;
 			children = (
-				58E75D701D50A06C00A38567 /* Helper */,
 				58E75D4A1D509DE400A38567 /* AppDelegate.swift */,
 				58E75D4C1D509DE400A38567 /* ViewController.swift */,
 				58E75D731D50C6BB00A38567 /* 1cecc7a77928ca8133fa24680a88d2f9.jpg */,
@@ -103,14 +100,6 @@
 				58E75D611D509DE400A38567 /* Info.plist */,
 			);
 			path = ExplodeKitTests;
-			sourceTree = "<group>";
-		};
-		58E75D701D50A06C00A38567 /* Helper */ = {
-			isa = PBXGroup;
-			children = (
-				58E75D711D50A08D00A38567 /* UIView+Autolayout.swift */,
-			);
-			name = Helper;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -217,7 +206,6 @@
 			files = (
 				58ACEF6B1D51576F00CD2538 /* ExplodeKit.swift in Sources */,
 				58E75D4D1D509DE400A38567 /* ViewController.swift in Sources */,
-				58E75D721D50A08D00A38567 /* UIView+Autolayout.swift in Sources */,
 				58E75D4B1D509DE400A38567 /* AppDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

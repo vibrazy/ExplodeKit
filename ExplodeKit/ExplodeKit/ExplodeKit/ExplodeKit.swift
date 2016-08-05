@@ -6,8 +6,10 @@
 //  Copyright © 2016 Daniel Tavares. All rights reserved.
 //
 
-import Foundation
 import SpriteKit
+
+final class ExplodeKitHolderView: SKView {}
+final class ExplodeKitScene: SKScene {}
 
 final class ExplodeKit {
 	// Default Options
@@ -19,8 +21,8 @@ final class ExplodeKit {
 		let sliceAmount: Int = 10
 	}
 
-	weak var hostingView: UIView?
-	var explodeScene: ExplodeKitScene!
+	private weak var hostingView: UIView?
+	private var explodeScene: ExplodeKitScene!
 
 	/**
 	Initializer
@@ -56,7 +58,7 @@ final class ExplodeKit {
 
 		// show element so we can take snapshot
 		if !removeElement {
-			element.hidden = false
+			element.alpha = 1.0
 		}
 
 		// Slice elements
@@ -69,7 +71,7 @@ final class ExplodeKit {
 		if removeElement {
 			element.removeFromSuperview()
 		} else {
-			element.hidden = true
+			element.alpha = 0.0
 		}
 	}
 
@@ -106,8 +108,7 @@ final class ExplodeKit {
 		guard let view = hostingView else { return }
 		if view.subviews.filter({$0 is ExplodeKitHolderView}).first == nil {
 			let holderView = ExplodeKitHolderView()
-			holderView.userInteractionEnabled = false
-			holderView.translatesAutoresizingMaskIntoConstraints = false
+			holderView.userInteractionEnabled = false			
 			view.addSubview(holderView)
 			holderView.fillSuperView()
 			explodeScene = ExplodeKitScene(size: view.frame.size)
@@ -168,18 +169,32 @@ final class ExplodeKit {
 	}
 }
 
-final class ExplodeKitHolderView: SKView {}
-final class ExplodeKitScene: SKScene {}
+// MARK: Extensions
 
 extension UIImage {
 	convenience init?(view: UIView) {
-		guard view.frame.size.width > 0 && view.frame.size.height > 0 else {
+		guard !CGRectIsNull(view.frame) else {
 			return nil
 		}
+
 		UIGraphicsBeginImageContextWithOptions(view.frame.size, false, UIScreen.mainScreen().scale)
-		view.layer.renderInContext(UIGraphicsGetCurrentContext()!)
+
+		guard let context = UIGraphicsGetCurrentContext() else { return nil }
+		view.layer.renderInContext(context)
 		let image = UIGraphicsGetImageFromCurrentImageContext()
 		UIGraphicsEndImageContext()
 		self.init(CGImage: image.CGImage!)
+	}
+}
+
+extension UIView {
+	func fillSuperView() {
+		guard let superview = self.superview else { return }
+		self.translatesAutoresizingMaskIntoConstraints = false
+		let top = NSLayoutConstraint(item: self, attribute: .Top, relatedBy: .Equal, toItem: superview, attribute: .Top, multiplier: 1, constant: 0)
+		let left = NSLayoutConstraint(item: self, attribute: .Left, relatedBy: .Equal, toItem: superview, attribute: .Left, multiplier: 1, constant: 0)
+		let bottom = NSLayoutConstraint(item: self, attribute: .Bottom, relatedBy: .Equal, toItem: superview, attribute: .Bottom, multiplier: 1, constant: 0)
+		let right = NSLayoutConstraint(item: self, attribute: .Right, relatedBy: .Equal, toItem: superview, attribute: .Right, multiplier: 1, constant: 0)
+		superview.addConstraints([top, left, bottom, right])
 	}
 }
