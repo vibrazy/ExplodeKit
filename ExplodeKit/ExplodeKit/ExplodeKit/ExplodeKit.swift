@@ -14,11 +14,11 @@ final class ExplodeKitScene: SKScene {}
 final class ExplodeKit {
 	// Default Options
 	struct Options {
-		let torque: CGFloat = 0.05
-		let impulse: CGVector = CGVector(dx: 0.0, dy: 20.0)
-		let angulerImpulse: CGFloat = 0.05
+		let torque: CGFloat = 0.1
+		let impulse: CGVector = CGVector(dx: 0.0, dy: 10.0)
+		let angulerImpulse: CGFloat = 0.15
 		let gravity: CGVector = CGVector(dx: 0, dy: -1.0)
-		let sliceAmount: Int = 10
+		let sliceAmount: Int = 20
 	}
 
 	private weak var hostingView: UIView?
@@ -42,7 +42,7 @@ final class ExplodeKit {
 	- parameter elements: UI Elements
 	- parameter options:  explosion options
 	*/
-	final func explode(elements: [UIView], options: Options = Options()) {
+	final func explode(_ elements: [UIView], options: Options = Options()) {
 		elements.forEach({explode($0, options: options)})
 	}
 
@@ -52,14 +52,12 @@ final class ExplodeKit {
 	- parameter element: UI Element to be exploded
 	- parameter options: explosion options
 	*/
-	final func explode(element: UIView, removeElement: Bool = true, options: Options = Options()) {
+	final func explode(_ element: UIView, options: Options = Options()) {
 		// setup view
 		setupIfNeeded(options)
 
 		// show element so we can take snapshot
-		if !removeElement {
-			element.alpha = 1.0
-		}
+		element.alpha = 1.0
 
 		// Slice elements
 		guard let slicedNodes = slice(element, scene: explodeScene, sliceAmount: options.sliceAmount) else { return }
@@ -67,12 +65,7 @@ final class ExplodeKit {
 		// explode elements
 		explode(slicedNodes, options: options)
 
-		// remove from hierarchy
-		if removeElement {
-			element.removeFromSuperview()
-		} else {
-			element.alpha = 0.0
-		}
+		element.alpha = 0.0
 	}
 
 	/**
@@ -81,9 +74,9 @@ final class ExplodeKit {
 	- parameter childen: sliced nodes
 	- parameter options: explosion options
 	*/
-	final private func explode(childen: [SKSpriteNode], options: Options = Options()) {
+	final private func explode(_ childen: [SKSpriteNode], options: Options = Options()) {
 		childen.forEach { node in
-			let body = SKPhysicsBody(rectangleOfSize: node.size, center: CGPoint(x: node.size.width * 0.5, y: node.size.height * 0.5))
+			let body = SKPhysicsBody(rectangleOf: node.size, center: CGPoint(x: node.size.width * 0.5, y: node.size.height * 0.5))
 			node.physicsBody = body
 
 			/// Impulses options
@@ -95,7 +88,7 @@ final class ExplodeKit {
 			/// apply impulses
 			node.physicsBody?.applyTorque(options.torque)
 			node.physicsBody?.applyAngularImpulse(angularImpulse)
-			node.physicsBody?.applyImpulse(CGVectorMake(sideImpulse, upImpulse))
+			node.physicsBody?.applyImpulse(CGVector(dx: sideImpulse, dy: upImpulse))
 		}
 	}
 
@@ -104,20 +97,20 @@ final class ExplodeKit {
 
 	- parameter options: Options for explosion animations
 	*/
-	final private func setupIfNeeded(options: Options = Options()) {
+	final private func setupIfNeeded(_ options: Options = Options()) {
 		guard let view = hostingView else { return }
 		if view.subviews.filter({$0 is ExplodeKitHolderView}).first == nil {
 			let holderView = ExplodeKitHolderView()
-			holderView.userInteractionEnabled = false			
+			holderView.isUserInteractionEnabled = false			
 			view.addSubview(holderView)
 			holderView.fillSuperView()
 			explodeScene = ExplodeKitScene(size: view.frame.size)
-			explodeScene.backgroundColor = UIColor.clearColor()
+			explodeScene.backgroundColor = UIColor.clear()
 			explodeScene.physicsWorld.gravity = options.gravity
 			holderView.backgroundColor = explodeScene.backgroundColor
 			holderView.presentScene(explodeScene)
-//			holderView.showsPhysics = true
-//			holderView.showsNodeCount = true
+			holderView.showsPhysics = true
+			holderView.showsNodeCount = true
 		}
 	}
 
@@ -130,7 +123,7 @@ final class ExplodeKit {
 
 	- returns: Array of SKSpriteNodes rendered from sliced textures
 	*/
-	final private func slice(view: UIView, scene: SKScene, sliceAmount: Int) -> [SKSpriteNode]? {
+	final private func slice(_ view: UIView, scene: SKScene, sliceAmount: Int) -> [SKSpriteNode]? {
 		guard let image = UIImage(view: view) else { return nil }
 
 		let imageWidth = image.size.width
@@ -144,22 +137,22 @@ final class ExplodeKit {
 		let tileWidth = imageWidth / horizontalSlices
 		let tileHeight = imageHeight / verticalSlices
 
-		let cgImage = image.CGImage!
-		let scale = UIScreen.mainScreen().scale
+		let cgImage = image.cgImage!
+		let scale = UIScreen.main().scale
 
 		for y in 0...Int(verticalSlices) {
 			for x in 0...Int(horizontalSlices) {
-				let rect = CGRectMake(CGFloat(x) * tileWidth,
-				                      CGFloat(y) * tileHeight,
-				                      tileWidth,
-				                      tileHeight)
+				let rect = CGRect(x: CGFloat(x) * tileWidth,
+				                      y: CGFloat(y) * tileHeight,
+				                      width: tileWidth,
+				                      height: tileHeight)
 
-				guard let tempImage = CGImageCreateWithImageInRect(cgImage, rect) else { continue }
+				guard let tempImage = cgImage.cropping(to: rect) else { continue }
 
-				let texture = SKTexture(CGImage: tempImage)
+				let texture = SKTexture(cgImage: tempImage)
 				let node = SKSpriteNode(texture: texture)
 				node.anchorPoint = CGPoint.zero
-				node.size = CGSizeMake(rect.size.width / scale , rect.size.height / scale)
+				node.size = CGSize(width: rect.size.width / scale , height: rect.size.height / scale)
 				node.position = CGPoint(x: view.frame.origin.x + (node.size.width * CGFloat(x)), y: scene.size.height - view.frame.origin.y - node.size.height - (node.size.height * CGFloat(y)))
 				explodeScene.addChild(node)
 			}
@@ -173,17 +166,17 @@ final class ExplodeKit {
 
 extension UIImage {
 	convenience init?(view: UIView) {
-		guard !CGRectIsNull(view.frame) else {
+		guard !view.frame.isNull else {
 			return nil
 		}
 
-		UIGraphicsBeginImageContextWithOptions(view.frame.size, false, UIScreen.mainScreen().scale)
+		UIGraphicsBeginImageContextWithOptions(view.frame.size, false, UIScreen.main().scale)
 
 		guard let context = UIGraphicsGetCurrentContext() else { return nil }
-		view.layer.renderInContext(context)
+		view.layer.render(in: context)
 		let image = UIGraphicsGetImageFromCurrentImageContext()
 		UIGraphicsEndImageContext()
-		self.init(CGImage: image.CGImage!)
+		self.init(cgImage: (image?.cgImage!)!)
 	}
 }
 
@@ -191,10 +184,10 @@ extension UIView {
 	func fillSuperView() {
 		guard let superview = self.superview else { return }
 		self.translatesAutoresizingMaskIntoConstraints = false
-		let top = NSLayoutConstraint(item: self, attribute: .Top, relatedBy: .Equal, toItem: superview, attribute: .Top, multiplier: 1, constant: 0)
-		let left = NSLayoutConstraint(item: self, attribute: .Left, relatedBy: .Equal, toItem: superview, attribute: .Left, multiplier: 1, constant: 0)
-		let bottom = NSLayoutConstraint(item: self, attribute: .Bottom, relatedBy: .Equal, toItem: superview, attribute: .Bottom, multiplier: 1, constant: 0)
-		let right = NSLayoutConstraint(item: self, attribute: .Right, relatedBy: .Equal, toItem: superview, attribute: .Right, multiplier: 1, constant: 0)
+		let top = NSLayoutConstraint(item: self, attribute: .top, relatedBy: .equal, toItem: superview, attribute: .top, multiplier: 1, constant: 0)
+		let left = NSLayoutConstraint(item: self, attribute: .left, relatedBy: .equal, toItem: superview, attribute: .left, multiplier: 1, constant: 0)
+		let bottom = NSLayoutConstraint(item: self, attribute: .bottom, relatedBy: .equal, toItem: superview, attribute: .bottom, multiplier: 1, constant: 0)
+		let right = NSLayoutConstraint(item: self, attribute: .right, relatedBy: .equal, toItem: superview, attribute: .right, multiplier: 1, constant: 0)
 		superview.addConstraints([top, left, bottom, right])
 	}
 }

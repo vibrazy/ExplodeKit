@@ -19,11 +19,13 @@ class ViewController: UIViewController {
 		explodeKit = ExplodeKit(hostingView: self.view)
 	}
 
-	override func touchesBegan(touches: Set<UITouch>, withEvent event: UIEvent?) {
+	override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
 		guard let alice = middleAlice where alice.alpha == 1.0 else {
 			explodeKit.explode(elementsViews.subviews)
 			return
 		}
-		explodeKit.explode(alice, removeElement: false)
+//		let options = ExplodeKit.Options()
+
+		explodeKit.explode(alice)
 	}
 }
